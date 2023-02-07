@@ -1,0 +1,25 @@
+version: '3.1'
+
+services:
+  api:
+    image: sigmatech-test:1.0
+    container_name: sigmatech_test_api
+    restart: unless-stopped
+    environment:
+      - MYSQL_DSN=root:secret@tcp(db:3306)/sigmatech_db?parseTime=True
+    ports:
+      - 3000:8000
+    depends_on:
+      - db
+
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    container_name: sigmatech_mysql_db
+    restart: unless-stopped
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=secret
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_DATABASE=sigmatech_db
