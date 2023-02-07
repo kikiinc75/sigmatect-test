@@ -7,6 +7,7 @@ import (
 	"sigmatech-test/domain/auth"
 	"sigmatech-test/domain/transaction"
 	"sigmatech-test/domain/user"
+	"sigmatech-test/domain/user_limit"
 	"sigmatech-test/handler"
 	"sigmatech-test/helper"
 	"strings"
@@ -20,12 +21,15 @@ func main() {
 
 	userRepository := user.NewRepository(db)
 	transactionRepository := transaction.NewRepository(db)
+	userLimitRepository := user_limit.NewRepository(db)
 
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
-	transactionService := transaction.NewService(transactionRepository)
+	userLimitService := user_limit.NewService(userLimitRepository)
+	transactionService := transaction.NewService(transactionRepository, userLimitRepository)
 
 	userHandler := handler.NewUserHandler(userService, authService)
+	userLimitHandler := handler.NewUserLimitHandler(userLimitService)
 	transactionHandler := handler.NewTransactionHandler(transactionService)
 	route := gin.Default()
 
@@ -40,8 +44,12 @@ func main() {
 	route.POST("/login", userHandler.Login)
 
 	route.GET("/profile", authMiddleware(authService, userService), userHandler.FetchUser)
+	route.PUT("/profile", authMiddleware(authService, userService), userHandler.UpdateUser)
 
-	route.GET("/transaction", authMiddleware(authService, userService), transactionHandler.GetTransactions)
+	route.GET("/transaction", authMiddleware(authService, userService), transactionHandler.GetUserTransactions)
+	route.POST("/transaction", authMiddleware(authService, userService), transactionHandler.CreateTransaction)
+
+	route.GET("/user-limit", authMiddleware(authService, userService), userLimitHandler.GetUserLimits)
 
 	port := os.Getenv("PORT")
 	if port == "" {

@@ -6,6 +6,7 @@ import (
 
 type Transaction struct {
 	ID             int
+	UserID         int
 	ContractNumber string
 	OTR            float64
 	AdminFee       float64

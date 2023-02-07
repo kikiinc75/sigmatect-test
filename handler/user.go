@@ -52,7 +52,7 @@ func (h *userHandler) RegisterUser(c *gin.Context) {
 
 	response := helper.APIResponse("Account has been registered", http.StatusOK, "success", formatter)
 
-	c.JSON(http.StatusOK, response)
+	c.JSON(http.StatusCreated, response)
 }
 
 func (h *userHandler) Login(c *gin.Context) {
@@ -138,4 +138,29 @@ func (h *userHandler) FetchUser(c *gin.Context) {
 
 	c.JSON(http.StatusOK, response)
 
+}
+
+func (h *userHandler) UpdateUser(c *gin.Context) {
+	var input payload.UpdateUserInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"errors": errors}
+
+		response := helper.APIResponse("Update user failed", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	currentUser := c.MustGet("currentUser").(model.User)
+	updatedUser, err := h.userService.UpdateUser(currentUser.ID, input)
+	if err != nil {
+		response := helper.APIResponse("Failed to update user", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.APIResponse("Success to update user", http.StatusOK, "success", user.FormatUser(updatedUser, ""))
+	c.JSON(http.StatusOK, response)
 }

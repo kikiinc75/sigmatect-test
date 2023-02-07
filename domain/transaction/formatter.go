@@ -17,7 +17,7 @@ type TransactionFormatter struct {
 	UpdatedAt      *time.Time `json:"updated_at"`
 }
 
-func FormatTransaction(transaction model.Transaction) TransactionFormatter {
+func FormatTransaction(transaction *model.Transaction) TransactionFormatter {
 	formatter := TransactionFormatter{
 		ID:             transaction.ID,
 		ContractNumber: transaction.ContractNumber,
@@ -36,7 +36,7 @@ func FormatTransaction(transaction model.Transaction) TransactionFormatter {
 func FormatTransactions(transactions []model.Transaction) []TransactionFormatter {
 	transactionFormatter := []TransactionFormatter{}
 	for _, transaction := range transactions {
-		formatter := FormatTransaction(transaction)
+		formatter := FormatTransaction(&transaction)
 		transactionFormatter = append(transactionFormatter, formatter)
 	}
 

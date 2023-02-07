@@ -4,6 +4,7 @@ import (
 	"errors"
 	"sigmatech-test/model"
 	"sigmatech-test/payload"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -13,6 +14,7 @@ type Service interface {
 	Login(input payload.LoginInput) (*model.User, error)
 	IsEmailAvailable(input payload.CheckEmailInput) (bool, error)
 	GetUserByID(ID int) (*model.User, error)
+	UpdateUser(ID int, inputData payload.UpdateUserInput) (*model.User, error)
 }
 
 type service struct {
@@ -90,4 +92,31 @@ func (s *service) GetUserByID(ID int) (*model.User, error) {
 	}
 
 	return user, nil
+}
+
+func (s *service) UpdateUser(ID int, inputData payload.UpdateUserInput) (*model.User, error) {
+	user, err := s.repository.FindByID(ID)
+	if err != nil {
+		return nil, err
+	}
+
+	birthdate, err := time.Parse("2006-01-02", inputData.BirthDate)
+	if err != nil {
+		return nil, err
+	}
+	user.NIK = inputData.NIK
+	user.FullName = inputData.FullName
+	user.LegalName = inputData.LegalName
+	user.BirthPlace = inputData.BirthPlace
+	user.BirthDate = &birthdate
+	user.Salary = inputData.Salary
+	user.PhotosCard = inputData.PhotosCard
+	user.PhotosSelfie = inputData.PhotosSelfie
+
+	updatedUser, err := s.repository.Update(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return updatedUser, nil
 }

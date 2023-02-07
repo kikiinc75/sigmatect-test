@@ -12,6 +12,6 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o /go/bin/sigmatech-test cmd/api/main.go
+RUN go build -o /go/bin/sigmatech-test main.go
 
 CMD [ "/go/bin/sigmatech-test" ]
