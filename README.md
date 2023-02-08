@@ -7,6 +7,12 @@ Create restful-api for solution on PT xyz using golang
 2. restore sql file and setup your own environment on database\mysql.go
 3. Running the API with go run main.go
    
+## Login Detail
+- Email : budi@example.com
+- Password : password
+
+- Email : annisa@example.com
+- Password : password
 
 ## Unit testing
 For unit testing, I tested starting from fetching the url with the method until the return the JSON results, matched using the assert method.
